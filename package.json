@@ -1,0 +1,25 @@
+{
+  "name": "aws-parameter-store-json-writer",
+  "version": "0.0.1",
+  "description": "A library that stores JSON in to AWS Parameter Store.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MattLloyd101/aws-parameter-store-json-writer.git"
+  },
+  "keywords": [
+    "aws",
+    "parameter",
+    "store",
+    "json"
+  ],
+  "author": "Matthew Lloyd",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MattLloyd101/aws-parameter-store-json-writer/issues"
+  },
+  "homepage": "https://github.com/MattLloyd101/aws-parameter-store-json-writer#readme"
+}
