@@ -23,11 +23,11 @@ module.exports = class AwsParameterStoreJsonWriter {
 		const apiVersion = configuration ? configuration.apiVersion : undefined;
 
 		this.ssm = new AWS.SSM(apiVersion);
-		this.ssm.putParameterAsync = promisify(this.ssm.putParameter)
+		this.ssm.putParameterAsync = promisify(this.ssm.putParameter);
 	}
 
 	isSecretString(key) {
-		return this.configuration.secrets.indexOf(key) !== -1;
+		return this.configuration.secrets.some((regex) => key.match(regex));
 	}
 
 	prepareParameters(params) {

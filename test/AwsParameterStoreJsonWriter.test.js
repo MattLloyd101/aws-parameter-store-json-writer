@@ -25,7 +25,11 @@ async function withSSMStub() {
 	const dependencyClass = AWS.SSM;
 	const stub = AWS.SSM = sinon.stub(AWS.SSM, 'constructor').returns(fakeSSMInstance);
 	
-	await body(stub, fakeSSMInstance);
+	if (body[Symbol.toStringTag] === 'AsyncFunction') {
+		await body(stub, fakeSSMInstance);
+	} else {
+		body(stub, fakeSSMInstance);
+	}
 };
 
 function containsNameValueType(ssm, name, type, value) {
@@ -38,7 +42,7 @@ describe('AwsParameterStoreJsonWriter', () => {
 	const configuration = {
 		"keyId": "arn:aws:kms:us-east-2:123456789012:key/1a2b3c4d-1a2b-1a2b-1a2b-1a2b3c4d5e",
 		"apiVersion": '2014-11-06',
-		"secrets": [ "/db/password" ]
+		"secrets": [ /\/path\/\d+\/password/ ]
 	};
 
 	after(() => {
@@ -208,18 +212,20 @@ describe('AwsParameterStoreJsonWriter', () => {
 			});
 		});
 
-		it('should call putParameter once for a secret string value', async () => {
+		it('should handle regular expressions for secrets', async () => {
 			await withSSMStub(ssm, async (stub) => {
 				parameterWriter = new AwsParameterStoreJsonWriter(configuration);
 				const simpleJson = {
-					"db": {
-						"password": "my-super-secret-password"
-					}
+					"path": [{ "password": "a" }, { "password": "b" }, { "password": "c" }]
 				};
 
 				await parameterWriter.write(simpleJson);
 
-				containsNameValueType(ssm, "/db/password", "SecureString", "my-super-secret-password");
+				ssm.putParameter.should.have.been.calledThrice
+
+				containsNameValueType(ssm, "/path/0/password", "SecureString", "a");
+				containsNameValueType(ssm, "/path/1/password", "SecureString", "b");
+				containsNameValueType(ssm, "/path/2/password", "SecureString", "c");
 			});
 		});
 
