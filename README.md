@@ -12,7 +12,7 @@ const AwsParameterStoreJsonWriter = require('aws-parameter-store-json-writer');
 const parameterWriter = new AwsParameterStoreJsonWriter({
 	"keyId": "arn:aws:kms:us-east-2:123456789012:key/1a2b3c4d-1a2b-1a2b-1a2b-1a2b3c4d5e",
 	"prefix": "/ContentManagement/ContentManagementAggregator",
-	"secrets": [ /\/(dev|prod)\/db\/password/ ]
+	"secrets": [ /\/ContentManagement\/ContentManagementAggregator\/(dev|prod)\/db\/password/ ]
 });
 
 const config = {
