@@ -12,7 +12,13 @@ const AwsParameterStoreJsonWriter = require('aws-parameter-store-json-writer');
 const parameterWriter = new AwsParameterStoreJsonWriter({
 	"keyId": "arn:aws:kms:us-east-2:123456789012:key/1a2b3c4d-1a2b-1a2b-1a2b-1a2b3c4d5e",
 	"prefix": "/ContentManagement/ContentManagementAggregator",
-	"secrets": [ /\/ContentManagement\/ContentManagementAggregator\/(dev|prod)\/db\/password/ ]
+	"secrets": [ /\/ContentManagement\/ContentManagementAggregator\/(dev|prod)\/db\/password/ ],
+	"retryOptions": {
+		"retries": 5,
+		"factor": 3,
+		"minTimeout": 1 * 1000,
+		"maxTimeout": 60 * 1000
+	}
 });
 
 const config = {
@@ -42,3 +48,4 @@ writeConfig(config);
 **keyId** – The AWS KMS Key Id you wish to encrypt your secrets with.  
 **prefix** – The prefix where you wish to store your JSON.  
 **secrets** – A set of Regular Expressions or Strings which match the paths of the keys you wish to be secret.
+**retryOptions** - The Parameter Store Json Writer uses (retry)[https://github.com/tim-kos/node-retry] as it's exponential backoff mechanism.

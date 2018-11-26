@@ -286,6 +286,7 @@ describe('AwsParameterStoreJsonWriter', () => {
 		});
 
 		it('should handle Arrays with nested json keys', async () => {
+
 			await withSSMStub(ssm, async (stub) => {
 				parameterWriter = new AwsParameterStoreJsonWriter(configuration);
 				const simpleJson = {
@@ -294,12 +295,75 @@ describe('AwsParameterStoreJsonWriter', () => {
 
 				await parameterWriter.write(simpleJson);
 
-				ssm.putParameter.should.have.been.calledThrice
+				ssm.putParameter.should.have.been.calledThrice;
 
 				containsNameValueType(ssm, "/path/0/db", "String", "a");
 				containsNameValueType(ssm, "/path/1/db", "String", "b");
 				containsNameValueType(ssm, "/path/2/db", "String", "c");
 			});
 		});
+
+		it('should use exponential back off for Throttling Exceptions', async () => {
+			const exception = { "code": "ThrottlingException" };
+			const putParameterStub = function (data, callback) {
+				callback(exception, null);
+			};
+			ssm = { putParameter: sinon.spy(putParameterStub) };
+
+			await withSSMStub(ssm, async (stub) => {
+				const config = {
+					"retryConfig": {
+						"retries": 3,
+						"minTimeout": 100,
+						"maxTimeout": 800,
+					}
+				};
+
+				parameterWriter = new AwsParameterStoreJsonWriter(config);
+				const simpleJson = {
+					"key": "value"
+				};
+
+				try {
+					await parameterWriter.write(simpleJson)
+				} catch (e) {
+					expect(e).to.equal(exception);
+				}
+
+				expect(ssm.putParameter).to.have.callCount(4);
+
+				containsNameValueType(ssm, "/key", "String", "value");
+				containsNameValueType(ssm, "/key", "String", "value");
+				containsNameValueType(ssm, "/key", "String", "value");
+				containsNameValueType(ssm, "/key", "String", "value");
+			});
+		});
+
+		it('should surface the error for non Throttling Exceptions', async () => {
+			const exception = { "code": "OtherException" };
+			const putParameterStub = function (data, callback) {
+				callback(exception, null);
+			};
+			ssm = { putParameter: sinon.spy(putParameterStub) };
+
+			await withSSMStub(ssm, async (stub) => {
+
+				parameterWriter = new AwsParameterStoreJsonWriter(configuration);
+				const simpleJson = {
+					"key": "value"
+				};
+
+				try {
+					await parameterWriter.write(simpleJson)
+				} catch (e) {
+					expect(e).to.equal(exception);
+				}
+
+				expect(ssm.putParameter).to.have.callCount(1);
+
+				containsNameValueType(ssm, "/key", "String", "value");
+			});
+		});
+
 	});
 });

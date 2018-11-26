@@ -1,6 +1,7 @@
 "use strict";
 
 const {promisify} = require('util');
+const retry = require('retry');
 const AWS = require('aws-sdk');
 
 module.exports = class AwsParameterStoreJsonWriter {
@@ -23,11 +24,11 @@ module.exports = class AwsParameterStoreJsonWriter {
 		const apiVersion = configuration ? configuration.apiVersion : undefined;
 
 		this.ssm = new AWS.SSM(apiVersion);
-		this.ssm.putParameterAsync = promisify(this.ssm.putParameter);
 	}
 
 	isSecretString(key) {
-		return this.configuration.secrets.some((regex) => key.match(regex));
+		const containsSecrets = 'secrets' in this.configuration;
+		return containsSecrets && this.configuration.secrets.some((regex) => key.match(regex));
 	}
 
 	prepareParameters(params) {
@@ -76,14 +77,25 @@ module.exports = class AwsParameterStoreJsonWriter {
 	}
 
 	putParameter(parameters) {
+		var operation = retry.operation(this.configuration.retryConfig);
+		const This = this;
 		return new Promise((resolve, reject) => {
 
-			return this.ssm.putParameter(parameters, function (err, data) {
-				if(err) {
-					return reject(err);
-				}
+			operation.attempt(function () {
+				return This.ssm.putParameter(parameters, function (err, data) {
+					if(err) {
+						const isThrottled = err.code === "ThrottlingException";
+						const shouldRetry = operation.retry(err)
+						if (isThrottled && shouldRetry) {
+							return
+						} else {
+							operation.stop();
+							return reject(err);
+						}
+					}
 
-				resolve(data);
+					resolve(data);
+				});
 			});
 
 		});
