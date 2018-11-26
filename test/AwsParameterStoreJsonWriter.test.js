@@ -22,7 +22,6 @@ async function withSSMStub() {
 		body = arguments[1];
 	}
 
-	const dependencyClass = AWS.SSM;
 	const stub = AWS.SSM = sinon.stub(AWS.SSM, 'constructor').returns(fakeSSMInstance);
 	
 	if (body[Symbol.toStringTag] === 'AsyncFunction') {
@@ -58,8 +57,8 @@ describe('AwsParameterStoreJsonWriter', () => {
 			const parameterWriter = new AwsParameterStoreJsonWriter(configuration);
 			parameterWriter.configuration.should.equal(configuration);
 		});
-		it('should instanciate an AWS SSM instance with config', () => {
-			withSSMStub((stub, ssm) => {
+		it('should instanciate an AWS SSM instance with config', async () => {
+			await withSSMStub((stub, ssm) => {
 
 				const parameterWriter = new AwsParameterStoreJsonWriter(configuration);
 
@@ -68,8 +67,8 @@ describe('AwsParameterStoreJsonWriter', () => {
 				parameterWriter.ssm.should.be.equal(ssm);
 			});
 		});
-		it('should instanciate an AWS SSM instance without config', () => {
-			withSSMStub((stub, ssm) => {
+		it('should instanciate an AWS SSM instance without config', async () => {
+			await withSSMStub((stub, ssm) => {
 				const parameterWriter = new AwsParameterStoreJsonWriter();
 
 				stub.should.have.been.calledWithNew;
