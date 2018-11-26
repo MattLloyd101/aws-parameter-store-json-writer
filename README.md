@@ -40,5 +40,5 @@ writeConfig(config);
 ## Parameter Store Json Writer Configuration
 
 **keyId** – The AWS KMS Key Id you wish to encrypt your secrets with.  
-**prefix** – The prefix where you wish to store your JSON.
+**prefix** – The prefix where you wish to store your JSON.  
 **secrets** – A set of Regular Expressions or Strings which match the paths of the keys you wish to be secret.
