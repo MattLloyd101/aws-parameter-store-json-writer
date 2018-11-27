@@ -5,6 +5,16 @@
 
 A Node.js library that stores JSON in to AWS Parameter Store.
 
+Meant to be used in conjunction with [aws-parameter-store-json-reader](https://github.com/MattLloyd101/aws-parameter-store-json-reader).
+
+## Installation
+
+via [npm](https://github.com/npm/npm)
+
+```bash
+npm install aws-parameter-store-json-writer
+```
+
 ## Usage
 
 ```javascript
@@ -12,7 +22,6 @@ const AwsParameterStoreJsonWriter = require('aws-parameter-store-json-writer');
 
 const parameterWriter = new AwsParameterStoreJsonWriter({
 	"keyId": "arn:aws:kms:us-east-2:123456789012:key/1a2b3c4d-1a2b-1a2b-1a2b-1a2b3c4d5e",
-	"prefix": "/ContentManagement/ContentManagementAggregator",
 	"secrets": [ /\/ContentManagement\/ContentManagementAggregator\/(dev|prod)\/db\/password/ ],
 	"retryOptions": {
 		"retries": 5,
@@ -41,7 +50,8 @@ const config = {
 };
 
 async function writeConfig(config) {
-	return await parameterWriter.write(config);
+	const prefix = "/ContentManagement/ContentManagementAggregator";
+	return await parameterWriter.write(prefix, config);
 }
 
 writeConfig(config);
@@ -63,10 +73,10 @@ The above will yield the following parameters added:
 
 ## Parameter Store Json Writer Configuration
 
-**keyId** – The AWS KMS Key Id you wish to encrypt your secrets with.  
-**prefix** – The prefix where you wish to store your JSON.  
-**secrets** – A set of Regular Expressions or Strings which match the paths of the keys you wish to be secret.  
-**retryOptions** - The Parameter Store Json Writer uses [retry](https://github.com/tim-kos/node-retry) as it's exponential backoff mechanism.
+**apiVersion** – (optional) The version of the AWS API you wish to be using.
+**keyId** – (optional) The AWS KMS Key Id you wish to encrypt your secrets with.  
+**secrets** – (optional) A set of Regular Expressions or Strings which match the paths of the keys you wish to be secret.  
+**retryOptions** - (optional) The Parameter Store Json Writer uses [retry](https://github.com/tim-kos/node-retry) as it's exponential backoff mechanism.
 
 ## Versioning
 
