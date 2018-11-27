@@ -26,7 +26,10 @@ const config = {
 		"db": {
 			"username": "dev-user",
 			"password": "secret-password"
-		}
+		},
+		"tags": ["dev", "database"],
+		"ids": [12, 42, 128],
+		"objs": [{ "entry": 1 }, { "entry": 2 }, { "entry": 3 }]
 	},
 	"prod": {
 		"db": {
@@ -41,7 +44,23 @@ async function writeConfig(config) {
 }
 
 writeConfig(config);
+
+
 ```
+
+The above will yield the following parameters added:
+
+| Name | Type | Key ID | Value |
+| ---- | ---- | ------ | ----- |
+| /ContentManagement/ContentManagementAggregator/dev/db/username | String | - | dev-user |
+| /ContentManagement/ContentManagementAggregator/dev/db/password | SecureString | arn:aws:kms:us-east-2:123456789012:key/1a2b3c4d-1a2b-1a2b-1a2b-1a2b3c4d5e | secret-password |
+| /ContentManagement/ContentManagementAggregator/dev/tags | StringList | - | "dev", "database" |
+| /ContentManagement/ContentManagementAggregator/dev/ids | StringList | - | "12", "42", "128" |
+| /ContentManagement/ContentManagementAggregator/dev/objs/0/entry | String | - | "1" |
+| /ContentManagement/ContentManagementAggregator/dev/objs/1/entry | String | - | "2" |
+| /ContentManagement/ContentManagementAggregator/dev/objs/2/entry | String | - | "3" |
+| /ContentManagement/ContentManagementAggregator/prod/db/username | String | - | prod-user |
+| /ContentManagement/ContentManagementAggregator/prod/db/password | SecureString | arn:aws:kms:us-east-2:123456789012:key/1a2b3c4d-1a2b-1a2b-1a2b-1a2b3c4d5e | super-secret-password |
 
 ## Parameter Store Json Writer Configuration
 
