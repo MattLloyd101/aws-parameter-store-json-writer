@@ -1,5 +1,9 @@
 # AWS Parameter Store Json Writer - Changelog
 
+## 2018-11-27 Version 2.0.0
+
+* (Breaking) - Changed the interface such that write() parameter contains the key prefix.
+
 ## 2018-11-27 Version 1.1.1
 
 * (Bug fix) - Issue when handling dates in StringList types. Now properly converts to ISO Date format.

@@ -45,8 +45,6 @@ async function writeConfig(config) {
 }
 
 writeConfig(config);
-
-
 ```
 
 The above will yield the following parameters added:
@@ -69,3 +67,7 @@ The above will yield the following parameters added:
 **prefix** – The prefix where you wish to store your JSON.  
 **secrets** – A set of Regular Expressions or Strings which match the paths of the keys you wish to be secret.  
 **retryOptions** - The Parameter Store Json Writer uses [retry](https://github.com/tim-kos/node-retry) as it's exponential backoff mechanism.
+
+## Versioning
+
+This library uses the [Semver](https://semver.org/) versioning system. The numbers do not relate to maturity but the number of breaking changes introduced.

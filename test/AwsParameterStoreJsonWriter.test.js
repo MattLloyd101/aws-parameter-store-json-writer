@@ -10,6 +10,8 @@ const AwsParameterStoreJsonWriter = require('../src/AwsParameterStoreJsonWriter'
 
 const realSSM = AWS.SSM;
 
+const prefix = "";
+
 async function withSSMStub() {
 	let body, fakeSSMInstance;
 	if(arguments.length === 1) {
@@ -138,7 +140,7 @@ describe('AwsParameterStoreJsonWriter', () => {
 					"key": "value"
 				};
 
-				await parameterWriter.write(simpleJson);
+				await parameterWriter.write(prefix, simpleJson);
 
 				ssm.putParameter.should.have.been.calledWith(sinon.match.has("KeyId", configuration.keyId));
 			});
@@ -151,7 +153,7 @@ describe('AwsParameterStoreJsonWriter', () => {
 					"key": "value"
 				};
 
-				await parameterWriter.write(simpleJson);
+				await parameterWriter.write(prefix, simpleJson);
 
 				ssm.putParameter.should.have.been.calledWith(sinon.match.has("Overwrite", true));
 			});
@@ -165,7 +167,7 @@ describe('AwsParameterStoreJsonWriter', () => {
 					"key": "value"
 				};
 
-				await parameterWriter.write(simpleJson);
+				await parameterWriter.write(prefix, simpleJson);
 
 				ssm.putParameter.should.have.been.calledWith(sinon.match.has("Overwrite", false));
 			});
@@ -173,13 +175,12 @@ describe('AwsParameterStoreJsonWriter', () => {
 
 		it('should call putParameter with a prefix value', async () => {
 			await withSSMStub(ssm, async (stub) => {
-				const prefixConfiguration = Object.assign({ "prefix": "/ContentManagement/ContentManagementAggregator" }, configuration)
-				parameterWriter = new AwsParameterStoreJsonWriter(prefixConfiguration);
+				parameterWriter = new AwsParameterStoreJsonWriter(configuration);
 				const simpleJson = {
 					"key": "value"
 				};
 
-				await parameterWriter.write(simpleJson);
+				await parameterWriter.write("/ContentManagement/ContentManagementAggregator", simpleJson);
 
 				containsNameValueType(ssm, "/ContentManagement/ContentManagementAggregator/key", "String", "value");
 			});
@@ -192,7 +193,7 @@ describe('AwsParameterStoreJsonWriter', () => {
 					"key": "value"
 				};
 
-				await parameterWriter.write(simpleJson);
+				await parameterWriter.write(prefix, simpleJson);
 
 				containsNameValueType(ssm, "/key", "String", "value");
 			});
@@ -205,7 +206,7 @@ describe('AwsParameterStoreJsonWriter', () => {
 					"key": true
 				};
 
-				await parameterWriter.write(simpleJson);
+				await parameterWriter.write(prefix, simpleJson);
 
 				containsNameValueType(ssm, "/key", "String", "true");
 			});
@@ -218,7 +219,7 @@ describe('AwsParameterStoreJsonWriter', () => {
 					"path": [{ "password": "a" }, { "password": "b" }, { "password": "c" }]
 				};
 
-				await parameterWriter.write(simpleJson);
+				await parameterWriter.write(prefix, simpleJson);
 
 				ssm.putParameter.should.have.been.calledThrice
 
@@ -235,7 +236,7 @@ describe('AwsParameterStoreJsonWriter', () => {
 					"integer": 42
 				};
 
-				await parameterWriter.write(simpleJson);
+				await parameterWriter.write(prefix, simpleJson);
 
 				containsNameValueType(ssm, "/integer", "String", "42");
 			});
@@ -249,7 +250,7 @@ describe('AwsParameterStoreJsonWriter', () => {
 					"date": now
 				};
 
-				await parameterWriter.write(simpleJson);
+				await parameterWriter.write(prefix, simpleJson);
 
 				containsNameValueType(ssm, "/date", "String", now.toISOString());
 			});
@@ -264,7 +265,7 @@ describe('AwsParameterStoreJsonWriter', () => {
 					"string-list": ["a", 42, now]
 				};
 
-				await parameterWriter.write(simpleJson);
+				await parameterWriter.write(prefix, simpleJson);
 				const dateString =  now.toISOString();
 
 				containsNameValueType(ssm, "/string-list", "StringList", "a,42," + dateString);
@@ -280,7 +281,7 @@ describe('AwsParameterStoreJsonWriter', () => {
 					"string-list": ["hello,world", "hello", "world"]
 				};
 
-				await parameterWriter.write(simpleJson);
+				await parameterWriter.write(prefix, simpleJson);
 				const dateString =  now.toISOString();
 
 				containsNameValueType(ssm, "/string-list/0", "String", "hello,world");
@@ -300,7 +301,7 @@ describe('AwsParameterStoreJsonWriter', () => {
 					}
 				};
 
-				await parameterWriter.write(simpleJson);
+				await parameterWriter.write(prefix, simpleJson);
 
 				containsNameValueType(ssm, "/path1/path2/path3", "String", "value");
 			});
@@ -314,7 +315,7 @@ describe('AwsParameterStoreJsonWriter', () => {
 					"path": [{ "db": "a" }, { "db": "b" }, { "db": "c" }]
 				};
 
-				await parameterWriter.write(simpleJson);
+				await parameterWriter.write(prefix, simpleJson);
 
 				ssm.putParameter.should.have.been.calledThrice;
 
@@ -346,7 +347,7 @@ describe('AwsParameterStoreJsonWriter', () => {
 				};
 
 				try {
-					await parameterWriter.write(simpleJson)
+					await parameterWriter.write(prefix, simpleJson)
 				} catch (e) {
 					expect(e).to.equal(exception);
 				}
@@ -375,7 +376,7 @@ describe('AwsParameterStoreJsonWriter', () => {
 				};
 
 				try {
-					await parameterWriter.write(simpleJson)
+					await parameterWriter.write(prefix, simpleJson)
 				} catch (e) {
 					expect(e).to.equal(exception);
 				}

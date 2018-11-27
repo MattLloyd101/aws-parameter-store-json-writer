@@ -53,8 +53,8 @@ module.exports = class AwsParameterStoreJsonWriter {
 		})
 	}
 
-	async write(data) {
-		return await this.handleObjectValue(this.configuration.prefix || "", data);
+	async write(prefix, data) {
+		return await this.handleObjectValue(prefix, data);
 	}
 
 	async handleObjectValue(prefix, object) {
@@ -83,7 +83,7 @@ module.exports = class AwsParameterStoreJsonWriter {
 			return await this.handleObjectValue(prefixedKey, value);
 		}
 
-		return await this.handleStringValue(prefixedKey, AwsParameterStoreJsonWriter.stringValue(value));
+		return await this.handleStringValue(prefixedKey, value);
 	}
 
 	putParameter(parameters) {
@@ -117,7 +117,7 @@ module.exports = class AwsParameterStoreJsonWriter {
 		const parameters = this.prepareParameters({
 			"Name": key,
 			"Type": isSecret ? "SecureString" : "String",
-			"Value": value.toString()
+			"Value": AwsParameterStoreJsonWriter.stringValue(value)
 		});
 
 		return this.putParameter(parameters);
