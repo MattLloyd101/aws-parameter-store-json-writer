@@ -1,6 +1,7 @@
 # AWS Parameter Store JSON Writer
 
-[![Build Status](https://travis-ci.org/MattLloyd101/aws-parameter-store-json-writer.svg?branch=master)](https://travis-ci.org/MattLloyd101/aws-parameter-store-json-writer) [![npm version](https://badge.fury.io/js/aws-parameter-store-json-writer.svg)](https://badge.fury.io/js/aws-parameter-store-json-writer)
+[![Build Status](https://travis-ci.org/MattLloyd101/aws-parameter-store-json-writer.svg?branch=master)](https://travis-ci.org/MattLloyd101/aws-parameter-store-json-writer)
+[![npm version](https://badge.fury.io/js/aws-parameter-store-json-writer.svg)](https://badge.fury.io/js/aws-parameter-store-json-writer)
 
 A Node.js library that stores JSON in to AWS Parameter Store.
 

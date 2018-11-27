@@ -258,13 +258,34 @@ describe('AwsParameterStoreJsonWriter', () => {
 		it('should call putParameter once for a string list', async () => {
 			await withSSMStub(ssm, async (stub) => {
 				parameterWriter = new AwsParameterStoreJsonWriter(configuration);
+
+				const now = new Date();
 				const simpleJson = {
-					"string-list": ["a", "b", "c"]
+					"string-list": ["a", 42, now]
 				};
 
 				await parameterWriter.write(simpleJson);
+				const dateString =  now.toISOString();
 
-				containsNameValueType(ssm, "/string-list", "StringList", "a,b,c");
+				containsNameValueType(ssm, "/string-list", "StringList", "a,42," + dateString);
+			});
+		});
+
+		it('should not allow lists which contain values with commas as a StringList', async () => {
+			await withSSMStub(ssm, async (stub) => {
+				parameterWriter = new AwsParameterStoreJsonWriter(configuration);
+
+				const now = new Date();
+				const simpleJson = {
+					"string-list": ["hello,world", "hello", "world"]
+				};
+
+				await parameterWriter.write(simpleJson);
+				const dateString =  now.toISOString();
+
+				containsNameValueType(ssm, "/string-list/0", "String", "hello,world");
+				containsNameValueType(ssm, "/string-list/1", "String", "hello");
+				containsNameValueType(ssm, "/string-list/2", "String", "world");
 			});
 		});
 

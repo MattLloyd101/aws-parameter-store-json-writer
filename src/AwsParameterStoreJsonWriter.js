@@ -15,8 +15,22 @@ module.exports = class AwsParameterStoreJsonWriter {
 			value instanceof Date;
 	}
 
+	static containsComma(value) {
+		return value.toString().indexOf(',') !== -1;
+	}
+
 	static isStringList(array) {
-		return array.every(this.isStringType);
+		// everything must be a stringable type and nothing can contain a comma.
+		return array.every(this.isStringType) && !array.some(this.containsComma);
+	}
+
+	static stringValue(value) {
+		const isDate = value instanceof Date;
+		if(isDate) {
+			return value.toISOString();
+		}
+
+		return value.toString();
 	}
 
 	constructor(configuration) {
@@ -69,11 +83,7 @@ module.exports = class AwsParameterStoreJsonWriter {
 			return await this.handleObjectValue(prefixedKey, value);
 		}
 
-		if(isDate) {
-			value = value.toISOString();
-		}
-
-		return await this.handleStringValue(prefixedKey, value);
+		return await this.handleStringValue(prefixedKey, AwsParameterStoreJsonWriter.stringValue(value));
 	}
 
 	putParameter(parameters) {
@@ -114,7 +124,7 @@ module.exports = class AwsParameterStoreJsonWriter {
 	}
 
 	async handleStringListValue(key, stringList) {
-		const stringListValue = stringList.map((_) => _.toString()).join(',');
+		const stringListValue = stringList.map(AwsParameterStoreJsonWriter.stringValue).join(',');
 		
 		const parameters = this.prepareParameters({
 			"Name": key,
