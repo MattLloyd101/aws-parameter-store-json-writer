@@ -73,7 +73,7 @@ The above will yield the following parameters added:
 
 ## Parameter Store Json Writer Configuration
 
-**apiVersion** – (optional) The version of the AWS API you wish to be using.
+**apiVersion** – (optional) The version of the AWS API you wish to be using.  
 **keyId** – (optional) The AWS KMS Key Id you wish to encrypt your secrets with.  
 **secrets** – (optional) A set of Regular Expressions or Strings which match the paths of the keys you wish to be secret.  
 **retryOptions** - (optional) The Parameter Store Json Writer uses [retry](https://github.com/tim-kos/node-retry) as it's exponential backoff mechanism.
