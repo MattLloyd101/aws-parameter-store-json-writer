@@ -65,7 +65,7 @@ describe('AwsParameterStoreJsonWriter', () => {
                 const parameterWriter = new AwsParameterStoreJsonWriter(configuration);
 
                 stub.should.have.been.calledWithNew;
-                stub.getCall(0).args[0].should.be.equal(configuration.apiVersion);
+                stub.getCall(0).args[0].should.be.eql({ "apiVersion": configuration.apiVersion });
                 parameterWriter.ssm.should.be.equal(ssm);
             });
         });

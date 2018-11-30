@@ -1,5 +1,9 @@
 # AWS Parameter Store Json Writer - Changelog
 
+## 2018-11-27 Version 2.0.1
+
+* (Bug fix) - AWS APIVersion now is passed to the SSM module correctly.
+
 ## 2018-11-27 Version 2.0.0
 
 * (Breaking) - Changed the interface such that write() parameter contains the key prefix.

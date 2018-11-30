@@ -34,9 +34,9 @@ module.exports = class AwsParameterStoreJsonWriter {
 
     constructor(configuration) {
         this.configuration = configuration;
-        const apiVersion = configuration ? configuration.apiVersion : undefined;
+        const ssmConfiguration = configuration ? { "apiVersion": configuration.apiVersion } : undefined;
 
-        this.ssm = new AWS.SSM(apiVersion);
+        this.ssm = new AWS.SSM(ssmConfiguration);
     }
 
     isSecretString(key) {
