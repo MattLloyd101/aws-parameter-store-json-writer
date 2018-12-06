@@ -21,37 +21,37 @@ npm install aws-parameter-store-json-writer
 const AwsParameterStoreJsonWriter = require('aws-parameter-store-json-writer');
 
 const parameterWriter = new AwsParameterStoreJsonWriter({
-	"keyId": "arn:aws:kms:us-east-2:123456789012:key/1a2b3c4d-1a2b-1a2b-1a2b-1a2b3c4d5e",
-	"secrets": [ /\/ContentManagement\/ContentManagementAggregator\/(dev|prod)\/db\/password/ ],
-	"retryOptions": {
-		"retries": 5,
-		"factor": 3,
-		"minTimeout": 1 * 1000,
-		"maxTimeout": 60 * 1000
-	}
+    "keyId": "arn:aws:kms:us-east-2:123456789012:key/1a2b3c4d-1a2b-1a2b-1a2b-1a2b3c4d5e",
+    "secrets": [ /\/ContentManagement\/ContentManagementAggregator\/(dev|prod)\/db\/password/ ],
+    "retryOptions": {
+        "retries": 5,
+        "factor": 3,
+        "minTimeout": 1 * 1000,
+        "maxTimeout": 60 * 1000
+    }
 });
 
 const config = {
-	"dev": {
-		"db": {
-			"username": "dev-user",
-			"password": "secret-password"
-		},
-		"tags": ["dev", "database"],
-		"ids": [12, 42, 128],
-		"objs": [{ "entry": 1 }, { "entry": 2 }, { "entry": 3 }]
-	},
-	"prod": {
-		"db": {
-			"username": "prod-user",
-			"password": "super-secret-password"
-		}
-	}
+    "dev": {
+        "db": {
+            "username": "dev-user",
+            "password": "secret-password"
+        },
+        "tags": ["dev", "database"],
+        "ids": [12, 42, 128],
+        "objs": [{ "entry": 1 }, { "entry": 2 }, { "entry": 3 }]
+    },
+    "prod": {
+        "db": {
+            "username": "prod-user",
+            "password": "super-secret-password"
+        }
+    }
 };
 
 async function writeConfig(config) {
-	const prefix = "/ContentManagement/ContentManagementAggregator";
-	return await parameterWriter.write(prefix, config);
+    const prefix = "/ContentManagement/ContentManagementAggregator";
+    return await parameterWriter.write(prefix, config);
 }
 
 writeConfig(config);
